@@ -20,10 +20,10 @@ def get_driver():
     global _driver
     if _driver is None:
         _driver = GraphDatabase.driver(
-            os.getenv("NEO4J_URI", "bolt://localhost:7687"),
+            os.getenv("NEO4J_URI"),                # ← no localhost fallback (would break on Render)
             auth=(
-                os.getenv("NEO4J_USER", "neo4j"),
-                os.getenv("NEO4J_PASSWORD", "bharatgraph"),
+                os.getenv("NEO4J_USERNAME"),        # ← was NEO4J_USER — matches Aura env var name
+                os.getenv("NEO4J_PASSWORD"),
             ),
             max_connection_pool_size=10,
         )
@@ -137,12 +137,12 @@ def test_connection():
         driver = get_driver()
         with driver.session() as session:
             session.run("RETURN 1 AS ok").single()
-        uri = os.getenv("NEO4J_URI", "bolt://localhost:7687")
+        uri = os.getenv("NEO4J_URI", "(uri from env)")
         print(f"  [neo4j] Connected to {uri}")
         return True
     except Exception as e:
         print(f"  [neo4j] Connection failed: {e}")
-        print("  Set NEO4J_URI / NEO4J_USER / NEO4J_PASSWORD env vars")
+        print("  Set NEO4J_URI / NEO4J_USERNAME / NEO4J_PASSWORD env vars")
         return False
 
 
