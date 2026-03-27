@@ -236,7 +236,7 @@ def graph_stats():
                 "low":  row["low"]  if row["low"]  else 0,
             }
 
-        driver.close()
+        
         set_cached("stats", stats, ttl=60)
         log.info("Stats fetched")
         return stats
@@ -282,7 +282,7 @@ def search_graph(
             """, q=q, limit=limit)
             results["edges"] = [dict(row) for row in r]
 
-        driver.close()
+       
         results["total"] = len(results["nodes"]) + len(results["edges"])
         log.info(f"Search '{q}' -> {results['total']} results")
         return results
@@ -477,7 +477,6 @@ def natural_language_query(req: QueryRequest):
                 live_edges = [dict(row) for row in result]
                 log.info(f"  Live news edges found: {len(live_edges)}")
 
-        driver.close()
 
         # ────────────────────────────────────────────────────
         # Combine edges: KB first (context), then live (recent)
@@ -682,7 +681,7 @@ def whatif(req: WhatIfRequest):
                 RETURN count(r) AS n
             """).single()["n"]
 
-        driver.close()
+     
 
         # ── Domain breakdown ──────────────────────────────────
         domain_breakdown = {}
@@ -897,7 +896,7 @@ def get_alerts():
                     "watch_for":    "Dam construction upstream of Brahmaputra or Indus tributaries",
                 })
 
-        driver.close()
+        
 
         result = {"total_alerts": len(alerts), "alerts": alerts}
         set_cached("alerts", result, ttl=30)   # 30s — faster refresh than other endpoints
@@ -962,7 +961,7 @@ def get_node_detail(node_id: str):
             """, name=node_id)
             incoming = [dict(r) for r in result]
 
-        driver.close()
+       
         log.info(f"Node detail: {node_id}")
 
         return {
